@@ -13,7 +13,6 @@ public class Ship : ScriptableObject
 
     [Header("---SHIP IDLE COMBAT STATS---")]
     public int attackPower;
-    public int defensePower;
     public int health;
     public int tier;
 }
