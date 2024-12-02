@@ -40,12 +40,17 @@ public class CombatManager : MonoBehaviour
 
     private IEnumerator CombatCoroutine()
     {
+        float maxPlayerHealth = playerHealth;
+        float maxEnemyHealth = enemyHealth;
+
         while (playerHealth > 0 && enemyHealth > 0)
         {
             playerAttack = GameManager.Instance.playerData.attackPower;
 
             enemyHealth -= playerAttack;
             playerHealth -= enemyAttack;
+
+            uiEventManager.UpdateHealthBars(playerHealth, maxPlayerHealth, enemyHealth, maxEnemyHealth);
 
             yield return new WaitForSeconds(1f);
 

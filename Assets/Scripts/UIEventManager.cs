@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIEventManager : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class UIEventManager : MonoBehaviour
     [SerializeField] GameObject combatUIObject;
     [SerializeField] GameObject combatLossUIObject;
     [SerializeField] GameObject combatWinUIObject;
+
+    [Header("---HEALTH BARS---")]
+    [SerializeField] Slider playerHealthBar;
+    [SerializeField] Slider enemyHealthBar;
 
     bool toggleStatusDouble = false;
     bool toggleStatusHalf = false;
@@ -39,12 +44,12 @@ public class UIEventManager : MonoBehaviour
     public void HalfGoldUI()
     {
         toggleStatusHalf = !toggleStatusHalf;
-        doubleGoldUIObject.SetActive(toggleStatusHalf);
+        halfGoldUIObject.SetActive(toggleStatusHalf);
     }
     public void CombatUI()
     {
         toggleStatusCombat = !toggleStatusCombat;
-        doubleGoldUIObject.SetActive(toggleStatusCombat);
+        combatUIObject.SetActive(toggleStatusCombat);
     }
     public void onPlayerLose()
     {
@@ -80,5 +85,10 @@ public class UIEventManager : MonoBehaviour
         combatWinUIObject.SetActive(toggleStatusWinCombat);
 
         StopCoroutine(playerWin());
+    }
+    public void UpdateHealthBars(float playerHealth, float maxPlayerHealth, float enemyHealth, float maxEnemyHealth)
+    {
+        playerHealthBar.value = playerHealth / maxPlayerHealth;
+        enemyHealthBar.value = enemyHealth / maxEnemyHealth;    
     }
 }
