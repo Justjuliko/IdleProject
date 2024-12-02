@@ -13,7 +13,6 @@ public class PlayerData
     public float health = 1;
     public float enemyHealth = 100;
     public float enemyAttackPower = 1;
-    public bool firstEnemy = false;
 
     public void AddGold(float amount) //To change the gold value
     {
@@ -35,8 +34,7 @@ public class PlayerData
     }
     public void AddCostMultiplier() //To increase the cost of the buyables
     {
-        float baseAmount = 1;
-        costMultiplier *= 0.5f + baseAmount;
+        costMultiplier += 0.1f * costMultiplier;
     }
     public void AddGoldPerSecond(float amount) //To increase the goldPerSecond
     {
@@ -52,20 +50,16 @@ public class PlayerData
     }
     public void AddEnemyStats(float healthMultiplier, float attackMultiplier)
     {
-        enemyHealth *= healthMultiplier + enemyHealth;
-        enemyAttackPower *= attackMultiplier + enemyAttackPower;
-    }
-    public void enableFirstEnemy()
-    { 
-        firstEnemy = true; 
+        enemyHealth += healthMultiplier * enemyHealth;
+        enemyAttackPower += attackMultiplier * enemyAttackPower;
     }
     public void EventCostMultiplier(float amount)  //To change the cost of buyables
     {
-        costMultiplier = costMultiplier * amount;
+        costMultiplier *=  amount;
     }
     public void EventGoldPerSecond(float amount) //To change the goldPerSecond
     {
-       goldPerSecond = goldPerSecond * amount;
+       goldPerSecond *= amount;
     }
     public void BuyShip(Ship ship) //To buy ship if the player has enough gold
     {

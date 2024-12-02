@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CombatManager : MonoBehaviour
 {
+    EventManager eventManager;
+
     [Header("---COMBAT STATS---")]
     [SerializeField] float enemyHealth;
     [SerializeField] float enemyAttack;
@@ -14,6 +16,10 @@ public class CombatManager : MonoBehaviour
     [SerializeField] float enemyHealthMultiplier;
     [SerializeField] float enemyAttackPowerMultiplier;
 
+    public void getScripts()
+    {
+        eventManager = GetComponent<EventManager>();
+    }
     private void GetStatsValues()
     {
         playerHealth = GameManager.Instance.playerData.health;
@@ -44,13 +50,15 @@ public class CombatManager : MonoBehaviour
         if (enemyHealth <= 0)
         {
             NextEnemy();
-            GameManager.Instance.playerData.enableFirstEnemy();
+
             Debug.Log("Player won");
+            eventManager.checkEventStart();
             StopCoroutine(CombatCoroutine());
         }
         else if (playerHealth <= 0) 
         {
             Debug.Log("Enemy won");
+            eventManager.checkEventStart();
             StopCoroutine(CombatCoroutine());
         }
     }

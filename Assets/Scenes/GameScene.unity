@@ -1419,9 +1419,10 @@ GameObject:
   m_Component:
   - component: {fileID: 472406898}
   - component: {fileID: 472406899}
-  - component: {fileID: 472406900}
-  - component: {fileID: 472406901}
   - component: {fileID: 472406902}
+  - component: {fileID: 472406903}
+  - component: {fileID: 472406901}
+  - component: {fileID: 472406900}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1456,7 +1457,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ac0a81e688f8a64aab460d0d16cba7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  economyManager: {fileID: 472406900}
   playerData:
     gold: 0
     goldPerSecond: 0
@@ -1468,7 +1468,6 @@ MonoBehaviour:
     health: 0
     enemyHealth: 0
     enemyAttackPower: 0
-    firstEnemy: 0
 --- !u!114 &472406900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1511,12 +1510,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2061dc0fca7a8b24eb93ab48eabe5320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eventManager: {fileID: 472406903}
   enemyHealth: 0
   enemyAttack: 0
   playerHealth: 0
   playerAttack: 0
-  enemyHealthMultiplier: 0
-  enemyAttackPowerMultiplier: 0
+  enemyHealthMultiplier: 0.1
+  enemyAttackPowerMultiplier: 0.1
+--- !u!114 &472406903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472406897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c539e94200318045b43e6b543f469b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventInterval: 5
+  doubleGoldTimer: 10
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

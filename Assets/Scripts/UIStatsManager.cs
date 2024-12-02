@@ -13,7 +13,7 @@ public class UIStatsManager : MonoBehaviour
     {
         // Sets the text of goldDisplayText to show the player's current gold and the gold per second (formatted as integers).
         goldDisplayText.text = GameManager.Instance.playerData.gold.ToString("F0") + " / " +
-                               GameManager.Instance.playerData.goldPerSecond.ToString("F0") + " per Second";
+                               GameManager.Instance.playerData.goldPerSecond.ToString("F1") + " per sec";
     }
 
     // Method to display the player's fleet stats (health and attack power) on the UI.

@@ -6,7 +6,8 @@ public class GameManager : MonoBehaviour
 {
     [Header("---SCRIPTS---")]
     public static GameManager Instance; //Singleton for global access
-    [SerializeField] EconomyManager economyManager; //EconomyManager script
+    EconomyManager economyManager; //EconomyManager script
+    EventManager eventManager;
 
     [Header("---PLAYERDATA---")]
     public PlayerData playerData; //PlayerData Instance
@@ -27,6 +28,9 @@ public class GameManager : MonoBehaviour
     {
         economyManager = GetComponent<EconomyManager>();
         economyManager.startMethod();
+
+        eventManager = GetComponent<EventManager>();
+        eventManager.startMethod();
     }
 
     //Update is called every frame, if the MonoBehaviour is enabled
@@ -63,8 +67,7 @@ public class GameManager : MonoBehaviour
                 attackPower = 1,
                 health = 100,
                 enemyHealth = 100,
-                enemyAttackPower = 1,
-                firstEnemy = false
+                enemyAttackPower = 1
             };
             Debug.Log("New Game Created");
         }
