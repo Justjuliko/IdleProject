@@ -31,6 +31,8 @@ public class CombatManager : MonoBehaviour
     {
         while (playerHealth > 0 && enemyHealth > 0)
         {
+            playerAttack = GameManager.Instance.playerData.attackPower;
+
             enemyHealth -= playerAttack;
             playerHealth -= enemyAttack;
 
