@@ -12,12 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cc5dddcc1b05d24197bc58fadc91359, type: 3}
   m_Name: Brigantine
   m_EditorClassIdentifier: 
-  shipName: 
-  shipSprite: {fileID: 0}
-  baseGoldProduction: 0
-  baseCost: 0
-  costMultiplier: 0
-  attackPower: 0
-  defensePower: 0
-  health: 0
-  tier: 0
+  shipName: Valerya
+  shipPrefab: {fileID: 0}
+  baseGoldProduction: 1
+  baseCost: 4
+  attackPower: 5
+  health: 10
+  tier: 2

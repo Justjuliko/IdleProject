@@ -7,8 +7,6 @@ public class GameManager : MonoBehaviour
     [Header("---SCRIPTS---")]
     public static GameManager Instance; //Singleton for global access
     [SerializeField] EconomyManager economyManager; //EconomyManager script
-    [SerializeField] UIGoldManager uiGoldManager;
-    [SerializeField] UIBuyableManager uiBuyableManager;
 
     [Header("---PLAYERDATA---")]
     public PlayerData playerData; //PlayerData Instance
@@ -27,18 +25,14 @@ public class GameManager : MonoBehaviour
     //Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
     private void Start()
     {
-        economyManager.GetComponent<EconomyManager>();
-        uiGoldManager.GetComponent<UIGoldManager>();
-        uiBuyableManager.GetComponent<UIBuyableManager>();
-
-        uiGoldManager.DisplayGoldPerSecond();
+        economyManager = GetComponent<EconomyManager>();
+        economyManager.startMethod();
     }
 
     //Update is called every frame, if the MonoBehaviour is enabled
     private void Update()
     {
-        economyUpdateMethod();
-        uiUpdateMethod();
+        economyManager.updateMethod();
     }
     //Saves the game
     public void SavePlayerData() 
@@ -65,19 +59,14 @@ public class GameManager : MonoBehaviour
                 costMultiplier = 1,
                 tier1Ships = 0,
                 tier2Ships = 0,
-                tier3Ships = 0
+                tier3Ships = 0,
+                attackPower = 1,
+                health = 100,
+                enemyHealth = 100,
+                enemyAttackPower = 1,
+                firstEnemy = false
             };
             Debug.Log("New Game Created");
         }
-    }
-    //Update methods from EconomyManager script
-    private void economyUpdateMethod() 
-    {
-        economyManager.goldGenerator();
-    }
-    //Update methods from UIManager script
-    private void uiUpdateMethod()
-    {
-        uiGoldManager.DisplayGold();
     }
 }

@@ -5,7 +5,7 @@ public class Ship : ScriptableObject
 {
     [Header("---SHIP IDENTIFIER---")]
     public string shipName;
-    public Sprite shipSprite;
+    public GameObject shipPrefab;
 
     [Header("---SHIP IDLE STATS---")]
     public float baseGoldProduction;

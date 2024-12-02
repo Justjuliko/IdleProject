@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cc5dddcc1b05d24197bc58fadc91359, type: 3}
   m_Name: Sloop
   m_EditorClassIdentifier: 
-  shipName: Sloop
-  shipSprite: {fileID: 0}
+  shipName: Isabella
+  shipPrefab: {fileID: 0}
   baseGoldProduction: 5
-  baseCost: 1000
-  attackPower: 0
-  health: 0
-  tier: 0
+  baseCost: 2
+  attackPower: 1
+  health: 10
+  tier: 1

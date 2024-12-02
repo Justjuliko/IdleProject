@@ -4,13 +4,16 @@ using System.Diagnostics;
 public class PlayerData
 {
     public float gold;
-    public float goldPerSecond;
+    public float goldPerSecond = 1;
     public float costMultiplier = 1;
     public int tier1Ships;
     public int tier2Ships;
     public int tier3Ships;
-    public float attackPower;
-    public float health;
+    public float attackPower = 1;
+    public float health = 1;
+    public float enemyHealth = 100;
+    public float enemyAttackPower = 1;
+    public bool firstEnemy = false;
 
     public void AddGold(float amount) //To change the gold value
     {
@@ -33,7 +36,7 @@ public class PlayerData
     public void AddCostMultiplier() //To increase the cost of the buyables
     {
         float baseAmount = 1;
-        costMultiplier *= 1 + baseAmount;
+        costMultiplier *= 0.5f + baseAmount;
     }
     public void AddGoldPerSecond(float amount) //To increase the goldPerSecond
     {
@@ -46,6 +49,15 @@ public class PlayerData
     public void addAttackPower(float amount)
     {
         attackPower += amount;
+    }
+    public void AddEnemyStats(float healthMultiplier, float attackMultiplier)
+    {
+        enemyHealth *= healthMultiplier + enemyHealth;
+        enemyAttackPower *= attackMultiplier + enemyAttackPower;
+    }
+    public void enableFirstEnemy()
+    { 
+        firstEnemy = true; 
     }
     public void EventCostMultiplier(float amount)  //To change the cost of buyables
     {
@@ -62,6 +74,10 @@ public class PlayerData
         if (gold >= (shipCost * costMultiplier))
         {
             AddShip(ship.tier);
+            AddGold(-(shipCost * costMultiplier));
+            AddGoldPerSecond(ship.baseGoldProduction);
+            addAttackPower(ship.attackPower);
+            AddHealth(ship.health);
             AddCostMultiplier();
         }
     }
