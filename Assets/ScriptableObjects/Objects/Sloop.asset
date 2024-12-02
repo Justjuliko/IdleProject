@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sloop
   m_EditorClassIdentifier: 
   shipName: Isabella
-  shipPrefab: {fileID: 0}
+  shipPrefab: {fileID: 5171706226241994471, guid: 1919ccb583289ac49ae997b02b7c25d8, type: 3}
   baseGoldProduction: 5
   baseCost: 2
   attackPower: 1

@@ -5,6 +5,8 @@ using UnityEngine;
 public class CombatManager : MonoBehaviour
 {
     EventManager eventManager;
+    UIEventManager uiEventManager;
+    SFXManager sfxManager;
 
     [Header("---COMBAT STATS---")]
     [SerializeField] float enemyHealth;
@@ -19,6 +21,8 @@ public class CombatManager : MonoBehaviour
     public void getScripts()
     {
         eventManager = GetComponent<EventManager>();
+        uiEventManager = GetComponent<UIEventManager>();
+        sfxManager = GetComponent<SFXManager>();
     }
     private void GetStatsValues()
     {
@@ -29,6 +33,7 @@ public class CombatManager : MonoBehaviour
     }
     public void StartCombat()
     {
+        uiEventManager.CombatUI();
         GetStatsValues();
         StartCoroutine(CombatCoroutine());
     }
@@ -53,12 +58,18 @@ public class CombatManager : MonoBehaviour
 
             Debug.Log("Player won");
             eventManager.checkEventStart();
+            uiEventManager.CombatUI();
+            uiEventManager.onPlayerWin();
+            sfxManager.PlayerWinPlay();
             StopCoroutine(CombatCoroutine());
         }
         else if (playerHealth <= 0) 
         {
             Debug.Log("Enemy won");
             eventManager.checkEventStart();
+            uiEventManager.CombatUI();
+            uiEventManager.onPlayerLose();
+            sfxManager.PlayerLosePlay();
             StopCoroutine(CombatCoroutine());
         }
     }

@@ -1,8 +1,11 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIBuyableManager : MonoBehaviour
 {
+    Button button;
+
     [Header("---SHIP SCRIPTABLE OBJECT---")]
     [SerializeField] Ship ship;
 
@@ -17,6 +20,10 @@ public class UIBuyableManager : MonoBehaviour
     [SerializeField] TMP_Text attackValueText;
     [SerializeField] TMP_Text healthValueText;
 
+    public void getButton()
+    {
+        button = GetComponent<Button>();
+    }
     public void DisplayShipValues()
     {
         float costMultiplier = GameManager.Instance.playerData.costMultiplier;
@@ -26,5 +33,20 @@ public class UIBuyableManager : MonoBehaviour
         goldCostText.text = (ship.baseCost * costMultiplier).ToString("F0");
         attackValueText.text = "+ " + ship.attackPower.ToString("F0");
         healthValueText.text = "+ " + ship.health.ToString("F0");
+    }
+    public void isButtonInteractable()
+    {
+        float gold = GameManager.Instance.playerData.gold;
+        float shipCost = ship.baseCost;
+        float costMultiplier = GameManager.Instance.playerData.costMultiplier;
+
+        if (gold >= (shipCost * costMultiplier))
+        {
+            button.interactable = true;
+        }
+        else
+        {
+            button.interactable = false;
+        }
     }
 }

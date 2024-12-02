@@ -61,7 +61,7 @@ public class PlayerData
     {
        goldPerSecond *= amount;
     }
-    public void BuyShip(Ship ship) //To buy ship if the player has enough gold
+    public void BuyShip(Ship ship, UIEventManager uiEventManager, SFXManager sfxManager) //To buy ship if the player has enough gold
     {
         float shipCost = ship.baseCost;
 
@@ -73,6 +73,9 @@ public class PlayerData
             addAttackPower(ship.attackPower);
             AddHealth(ship.health);
             AddCostMultiplier();
+
+            uiEventManager.SpawnShip(ship);
+            sfxManager.BuyShipPlay(ship);
         }
     }
 }
