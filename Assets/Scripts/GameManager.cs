@@ -5,58 +5,74 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Header("---SCRIPTS---")]
-    public static GameManager Instance; //Singleton for global access
-    EconomyManager economyManager; //EconomyManager script
-    EventManager eventManager;
+    public static GameManager Instance; // Singleton instance for global access to the GameManager
+    private EconomyManager economyManager; // Reference to the EconomyManager script
+    private EventManager eventManager; // Reference to the EventManager script
 
     [Header("---PLAYERDATA---")]
-    public PlayerData playerData; //PlayerData Instance
+    public PlayerData playerData; // Instance of PlayerData to store player-related stats and progress
 
-    private static string savePath => Application.persistentDataPath + "/playerData.json"; //Default path to save the file
+    // Path to save and load the player's data file
+    private static string savePath => Application.persistentDataPath + "/playerData.json";
 
-    //Unity calls Awake when an enabled script instance is being loaded.
-    private void Awake() 
+    // Called when the script instance is loaded. Ensures only one instance of GameManager exists (Singleton pattern).
+    private void Awake()
     {
         if (Instance == null)
         {
-            Instance = this;
-            CreateOrLoadPlayer();
+            Instance = this; // Set this instance as the Singleton
+            CreateOrLoadPlayer(); // Load existing player data or create new data
         }
     }
-    //Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.
+
+    // Called on the first frame when the script is enabled, used to initialize game components
     private void Start()
     {
+        // Retrieve and initialize the EconomyManager
         economyManager = GetComponent<EconomyManager>();
         economyManager.startMethod();
 
+        // Retrieve and initialize the EventManager
         eventManager = GetComponent<EventManager>();
         eventManager.startMethod();
     }
 
-    //Update is called every frame, if the MonoBehaviour is enabled
+    // Called once per frame, used to update the EconomyManager
     private void Update()
     {
         economyManager.updateMethod();
     }
-    //Saves the game
-    public void SavePlayerData() 
+
+    // Saves the player's data to a file in JSON format
+    public void SavePlayerData()
     {
+        // Convert PlayerData object to JSON string
         string json = JsonUtility.ToJson(Instance.playerData, true);
+
+        // Write JSON string to a file at the specified path
         File.WriteAllText(savePath, json);
-        Debug.Log("Game saved");
+
+        Debug.Log("Game saved"); // Confirm save in the console
     }
-    //Loads the game
+
+    // Loads the player's data from a file if it exists; otherwise, creates a new PlayerData instance
     private void CreateOrLoadPlayer()
     {
+        // Check if the save file exists
         if (File.Exists(savePath))
         {
-            string json = File.ReadAllText(savePath); //Reads the JSON file
-            Instance.playerData = JsonUtility.FromJson<PlayerData>(json); //Converts the JSON file to a PlayerData object
-            Debug.Log("Game Loaded");
+            // Read the JSON data from the file
+            string json = File.ReadAllText(savePath);
+
+            // Deserialize the JSON data into a PlayerData object
+            Instance.playerData = JsonUtility.FromJson<PlayerData>(json);
+
+            Debug.Log("Game Loaded"); // Confirm successful load in the console
         }
         else
         {
-            playerData = new PlayerData //If the file does not exist, create a new save file
+            // Create a new PlayerData instance with default values
+            playerData = new PlayerData
             {
                 gold = 0,
                 goldPerSecond = 1,
@@ -69,7 +85,8 @@ public class GameManager : MonoBehaviour
                 enemyHealth = 100,
                 enemyAttackPower = 1
             };
-            Debug.Log("New Game Created");
+
+            Debug.Log("New Game Created"); // Confirm new game creation in the console
         }
     }
 }
