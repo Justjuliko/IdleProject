@@ -3774,8 +3774,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c539e94200318045b43e6b543f469b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  eventInterval: 5
-  doubleGoldTimer: 10
+  eventInterval: 15
+  doubleGoldTimer: 30
   halfGoldTimer: 15
 --- !u!114 &472406904
 MonoBehaviour:

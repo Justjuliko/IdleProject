@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance; // Singleton instance for global access to the GameManager
     private EconomyManager economyManager; // Reference to the EconomyManager script
     private EventManager eventManager; // Reference to the EventManager script
-    private UIEventManager uiEventManager;
+    private UIEventManager uiEventManager; // Reference to the UIEventManager script
 
     [Header("---PLAYERDATA---")]
     public PlayerData playerData; // Instance of PlayerData to store player-related stats and progress
@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     // Path to save and load the player's data file
     private static string savePath => Application.persistentDataPath + "/playerData.json";
 
-    // Called when the script instance is loaded. Ensures only one instance of GameManager exists (Singleton pattern).
+    // Ensures only one instance of GameManager exists (Singleton pattern)
     private void Awake()
     {
         if (Instance == null)
@@ -26,26 +26,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Called on the first frame when the script is enabled, used to initialize game components
+    // Initializes game components when the script is enabled
     private void Start()
     {
-        // Retrieve and initialize the EconomyManager
-        economyManager = GetComponent<EconomyManager>();
-        uiEventManager = GetComponent<UIEventManager>();
-        economyManager.startMethod();
+        economyManager = GetComponent<EconomyManager>(); // Retrieve EconomyManager
+        uiEventManager = GetComponent<UIEventManager>(); // Retrieve UIEventManager
+        economyManager.startMethod(); // Initialize EconomyManager
 
-        // Retrieve and initialize the EventManager
-        eventManager = GetComponent<EventManager>();
-        eventManager.startMethod();
+        eventManager = GetComponent<EventManager>(); // Retrieve EventManager
+        eventManager.startMethod(); // Initialize EventManager
 
-        RespawnShips();  // Respawn ships after loading the game
+        RespawnShips(); // Respawn ships based on saved player data
     }
 
-    // Called once per frame, used to update the EconomyManager
+    // Updates the game logic every frame
     private void Update()
     {
-        economyManager.updateMethod();
+        economyManager.updateMethod(); // Update EconomyManager logic
 
+        // Pass touch or mouse input positions to the EventManager
         if (Input.GetMouseButtonDown(0)) // Mouse click
         {
             eventManager.PassVector2(Input.mousePosition);
@@ -53,41 +52,40 @@ public class GameManager : MonoBehaviour
         else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) // Touch input
         {
             eventManager.PassVector2(Input.GetTouch(0).position);
-        }    
-}
-
-    // Saves the player's data to a file in JSON format
-    public void SavePlayerData()
-    {
-        // Convertir playerData a JSON
-        if (playerData == null)
-        {
-            Debug.LogError("playerData es null, no se puede guardar.");
-            return;
-        }
-
-        string json = JsonUtility.ToJson(playerData, true);
-
-        try
-        {
-            // Escribir el JSON en un archivo
-            File.WriteAllText(savePath, json);
-            Debug.Log("Datos guardados correctamente.");
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Error al guardar datos: {ex.Message}");
         }
     }
 
-    // Called when the application is quitting or the editor stops the play mode
+    // Saves the player's data to a JSON file
+    public void SavePlayerData()
+    {
+        if (playerData == null)
+        {
+            Debug.LogError("playerData is null, cannot save.");
+            return;
+        }
+
+        string json = JsonUtility.ToJson(playerData, true); // Convert PlayerData to JSON
+
+        try
+        {
+            File.WriteAllText(savePath, json); // Write JSON to file
+            Debug.Log("Player data saved successfully.");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error saving player data: {ex.Message}");
+        }
+    }
+
+    // Saves player data when the application is closed or paused
     private void OnApplicationQuit()
     {
         SavePlayerData();
     }
+
     private void OnApplicationPause(bool pauseStatus)
     {
-        if (pauseStatus) // Si la aplicación se pausa
+        if (pauseStatus) // Save progress if the app is paused
         {
             SavePlayerData();
             Debug.Log("Game progress saved on pause.");
@@ -96,33 +94,32 @@ public class GameManager : MonoBehaviour
 
     private void OnApplicationFocus(bool hasFocus)
     {
-        if (!hasFocus) // Si la aplicación pierde el foco
+        if (!hasFocus) // Save progress if the app loses focus
         {
             SavePlayerData();
             Debug.Log("Game progress saved on loss of focus.");
         }
     }
 
-
-    // Loads the player's data from a file if it exists; otherwise, creates a new PlayerData instance
+    // Loads player data from a file or creates new data if none exists
     private void CreateOrLoadPlayer()
     {
         if (File.Exists(savePath))
         {
-            string json = File.ReadAllText(savePath);
-            playerData = JsonUtility.FromJson<PlayerData>(json);
+            string json = File.ReadAllText(savePath); // Read saved JSON file
+            playerData = JsonUtility.FromJson<PlayerData>(json); // Deserialize JSON into PlayerData
 
             if (playerData == null)
             {
-                Debug.LogError("Error al cargar los datos del jugador desde el archivo.");
-                return; // Detén la ejecución si los datos no se cargan correctamente
+                Debug.LogError("Error loading player data from file.");
+                return;
             }
 
             Debug.Log("Game Loaded");
         }
         else
         {
-            // Si no existe el archivo de guardado, crea datos nuevos
+            // Initialize new PlayerData if no save exists
             playerData = new PlayerData
             {
                 gold = 0,
@@ -141,13 +138,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
+    // Respawns ships based on the player's saved progress
     private void RespawnShips()
     {
         if (uiEventManager == null)
         {
-            Debug.LogError("No se encontró UIEventManager en la escena.");
-            return; // Detener ejecución si no se encuentra el objeto
+            Debug.LogError("UIEventManager not found in the scene.");
+            return;
         }
 
         // Respawn ships for each tier
@@ -167,24 +164,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
-
-    /// <summary>
-    /// Spawns a ship based on its tier using the UIEventManager.
-    /// </summary>
+    // Spawns a ship of the specified tier using UIEventManager
     private void SpawnShipByTier(int tier, UIEventManager uiEventManager)
     {
-        // Asegúrate de que ship no sea null
-        Ship ship = ShipDatabase.Instance.GetShipByTier(tier);
+        Ship ship = ShipDatabase.Instance.GetShipByTier(tier); // Retrieve ship data by tier
+
         if (ship == null)
         {
-            Debug.LogWarning($"No se encontró el barco para el tier {tier}.");
-            return; // Detén la ejecución si no se encuentra el barco
+            Debug.LogWarning($"Ship for tier {tier} not found.");
+            return;
         }
 
-        // Si ship no es null, procede a hacer el spawn
-        uiEventManager.SpawnShip(ship);
+        uiEventManager.SpawnShip(ship); // Trigger ship spawn via UI
     }
-
 }

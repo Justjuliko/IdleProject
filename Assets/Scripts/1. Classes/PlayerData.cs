@@ -3,30 +3,31 @@ using System.Diagnostics;
 [System.Serializable]
 public class PlayerData
 {
-    // Player's current gold amount
+    // Represents the player's current gold amount
     public float gold;
 
-    // Gold generation rate per second
+    // Base rate at which the player generates gold per second
     public float baseGoldPerSecond = 1;
 
-    public float goldPerSecond => baseGoldPerSecond * eventGoldMultiplier; // Effective gold per second
-    private float eventGoldMultiplier = 1f; // Multiplier applied during events
+    // Effective gold generation per second, factoring in event multipliers
+    public float goldPerSecond => baseGoldPerSecond * eventGoldMultiplier;
+    private float eventGoldMultiplier = 1f; // Temporary multiplier for events
 
-    // Multiplier applied to the cost of buyable items
+    // Multiplier applied to item costs, increases as more items are purchased
     public float costMultiplier = 1;
 
-    // Number of ships the player owns per tier
+    // Tracks the number of ships owned by the player, organized by tiers
     public int tier1Ships;
     public int tier2Ships;
     public int tier3Ships;
 
     // Player's combat stats
-    public float attackPower = 1;
-    public float health = 1;
+    public float attackPower = 1; // Damage dealt per attack
+    public float health = 1; // Total health points
 
     // Enemy combat stats
-    public float enemyHealth = 100;
-    public float enemyAttackPower = 1;
+    public float enemyHealth = 100; // Enemy's starting health
+    public float enemyAttackPower = 1; // Enemy's attack power
 
     // Adds a specified amount of gold to the player's total
     public void AddGold(float amount)
@@ -34,7 +35,7 @@ public class PlayerData
         gold += amount;
     }
 
-    // Increases the count of ships for the specified tier
+    // Increases the number of ships owned by the player for a specific tier
     public void AddShip(int tier)
     {
         switch (tier)
@@ -49,88 +50,79 @@ public class PlayerData
                 tier3Ships++;
                 break;
             default:
-                return; // Do nothing if the tier is invalid
+                return; // Ignores invalid tier inputs
         }
     }
 
-    // Increases the cost multiplier for buyable items
+    // Scales up the cost multiplier for buyable items, making future purchases more expensive
     public void AddCostMultiplier()
     {
-        costMultiplier += 0.5f * costMultiplier;
+        costMultiplier += 0.5f * costMultiplier; // Exponential growth of costs
     }
 
-    // Increases the player's gold generation rate
+    // Boosts the player's base gold generation rate
     public void AddGoldPerSecond(float amount)
     {
         baseGoldPerSecond += amount;
     }
 
-    // Increases the player's health by a specified amount
+    // Increases the player's health by the specified amount
     public void AddHealth(float amount)
     {
         health += amount;
     }
 
-    // Increases the player's attack power by a specified amount
+    // Increases the player's attack power by the specified amount
     public void addAttackPower(float amount)
     {
         attackPower += amount;
     }
 
-    // Scales the enemy's health and attack power by specified multipliers
+    // Enhances the enemy's stats (health and attack power) for the next combat round
     public void AddEnemyStats(float healthMultiplier, float attackMultiplier)
     {
-        enemyHealth += healthMultiplier * enemyHealth;
-        enemyAttackPower += attackMultiplier * enemyAttackPower;
+        enemyHealth += healthMultiplier * enemyHealth; // Scales health
+        enemyAttackPower += attackMultiplier * enemyAttackPower; // Scales attack power
     }
 
-    // Modifies the cost multiplier by a specified factor
+    // Adjusts the cost multiplier during special events
     public void EventCostMultiplier(float amount)
     {
         costMultiplier *= amount;
     }
 
-    // Modifies the gold generation rate by a specified factor
+    // Adjusts the player's gold generation rate during special events
     public void EventGoldPerSecond(float amount)
     {
         baseGoldPerSecond *= amount;
     }
+
+    // Temporarily sets a multiplier for gold generation during events
     public void SetEventGoldMultiplier(float multiplier)
     {
-        eventGoldMultiplier = multiplier; // Temporarily modify the gold multiplier
+        eventGoldMultiplier = multiplier;
     }
 
-    // Allows the player to buy a ship if they have enough gold, and triggers relevant actions
+    // Handles the logic for buying a ship, including validation, updates, and effects
     public void BuyShip(Ship ship, UIEventManager uiEventManager, SFXManager sfxManager)
     {
-        float shipCost = ship.baseCost;
+        float shipCost = ship.baseCost; // The base cost of the ship
 
-        // Check if the player has enough gold to purchase the ship
+        // Ensures the player has sufficient gold to make the purchase
         if (gold >= (shipCost * costMultiplier))
         {
-            // Add the ship to the player's inventory
-            AddShip(ship.tier);
+            AddShip(ship.tier); // Adds the ship to the player's inventory
+            AddGold(-(shipCost * costMultiplier)); // Deducts the cost from the player's gold
 
-            // Deduct the cost of the ship from the player's gold
-            AddGold(-(shipCost * costMultiplier));
-
-            // Increase the player's gold generation rate
+            // Increases player's stats based on the purchased ship's contributions
             AddGoldPerSecond(ship.baseGoldProduction * baseGoldPerSecond);
-
-            // Increase the player's attack power
             addAttackPower(ship.attackPower * attackPower);
-
-            // Increase the player's health
             AddHealth(ship.health * health);
 
-            // Update the cost multiplier for future purchases
-            AddCostMultiplier();
+            AddCostMultiplier(); // Updates the cost multiplier for future purchases
 
-            // Trigger the ship spawning UI
-            uiEventManager.SpawnShip(ship);
-
-            // Play the appropriate sound effect for buying a ship
-            sfxManager.BuyShipPlay(ship);
+            uiEventManager.SpawnShip(ship); // Triggers a UI update for the new ship
+            sfxManager.BuyShipPlay(ship); // Plays the sound effect for buying the ship
         }
     }
 }

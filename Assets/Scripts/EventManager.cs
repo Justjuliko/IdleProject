@@ -7,29 +7,31 @@ using UnityEngine;
 /// </summary>
 public class EventManager : MonoBehaviour
 {
-    CombatManager combatManager;      // Reference to the CombatManager script.
-    UIEventManager uiEventManager;    // Reference to the UIEventManager script.
-    SFXManager sfxManager;            // Reference to the SFXManager script.
+    CombatManager combatManager;      // Reference to the CombatManager script, used for initiating combat events.
+    UIEventManager uiEventManager;    // Reference to the UIEventManager script, used for updating UI during events.
+    SFXManager sfxManager;            // Reference to the SFXManager script, used for playing sound effects during events.
 
-    [SerializeField] int eventInterval;       // Time interval between events in seconds.
-    [SerializeField] float doubleGoldTimer;  // Duration for the double gold event in seconds.
-    [SerializeField] float halfGoldTimer;    // Duration for the half gold event in seconds.
+    [SerializeField] int eventInterval;       // Time interval between checking for new events, in seconds.
+    [SerializeField] float doubleGoldTimer;  // Duration for the double gold event, in seconds.
+    [SerializeField] float halfGoldTimer;    // Duration for the half gold event, in seconds.
 
     /// <summary>
-    /// Initializes the script by retrieving necessary components and starting event checks.
+    /// Initializes the script by retrieving necessary components and starting the event check routine.
     /// </summary>
     public void startMethod()
     {
+        // Retrieve component references
         combatManager = GetComponent<CombatManager>();
         uiEventManager = GetComponent<UIEventManager>();
         sfxManager = GetComponent<SFXManager>();
 
+        // Start checking for events and initialize combat-related scripts
         checkEventStart();
         combatManager.getScripts();
     }
 
     /// <summary>
-    /// Starts the coroutine to periodically check for triggering events.
+    /// Starts the coroutine that periodically checks for new events.
     /// </summary>
     public void checkEventStart()
     {
@@ -37,91 +39,94 @@ public class EventManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Periodically checks if an event should be triggered based on the defined interval.
+    /// Coroutine that waits for the defined interval and triggers random events.
     /// </summary>
     private IEnumerator CheckForEvents()
     {
         Debug.Log("Start Checking for event");
-        yield return new WaitForSeconds(eventInterval);
-        TriggerRandomEvent();
+        yield return new WaitForSeconds(eventInterval); // Wait for the specified time interval
+        TriggerRandomEvent(); // Attempt to trigger a random event
     }
 
     /// <summary>
-    /// Determines and triggers a random event based on predefined probabilities.
+    /// Determines a random event to trigger based on predefined probabilities.
     /// </summary>
     private void TriggerRandomEvent()
     {
-        int eventChance = UnityEngine.Random.Range(0, 100);
+        int eventChance = UnityEngine.Random.Range(0, 100); // Generate a random number between 0 and 100
 
-        if (eventChance < 25)
+        if (eventChance < 10)
         {
-            StartCoroutine(ActivateDoubleGold()); // Double gold event.
+            StartCoroutine(ActivateDoubleGold()); // Trigger a double gold event if the chance is less than 10
             StopCoroutine(CheckForEvents());
         }
-        else if (eventChance >= 26 && eventChance <= 30)
+        else if (eventChance >= 11 && eventChance <= 25)
         {
-            StartCoroutine(ActivateHalfGold()); // Half gold event.
+            StartCoroutine(ActivateHalfGold()); // Trigger a half gold event if the chance is between 11 and 25
             StopCoroutine(CheckForEvents());
         }
-        else if (eventChance >= 31 && eventChance <= 35)
+        else if (eventChance >= 26 && eventChance <= 50)
         {
-            combatManager.StartCombat(); // Combat event.
-            sfxManager.CombatPlay();
+            combatManager.StartCombat(); // Trigger a combat event if the chance is between 26 and 50
+            sfxManager.CombatPlay();    // Play combat sound effects
             StopCoroutine(CheckForEvents());
         }
         else
         {
-            Debug.Log("No event triggered"); // No event occurs.
+            Debug.Log("No event triggered"); // Log if no event is triggered
             StopCoroutine(CheckForEvents());
-            StartCoroutine(CheckForEvents());
+            StartCoroutine(CheckForEvents()); // Restart the event checking coroutine
         }
     }
 
     /// <summary>
-    /// Activates the half gold event, modifying gold generation and updating UI.
+    /// Coroutine that activates the half gold event, temporarily reducing gold generation.
     /// </summary>
     private IEnumerator ActivateHalfGold()
     {
-        sfxManager.HalfPlay();
-        uiEventManager.HalfGoldUI();
+        sfxManager.HalfPlay();               // Play sound effect for half gold event
+        uiEventManager.HalfGoldUI();         // Update UI for half gold event
         Debug.Log("HalfGold started");
 
-        // Reduce gold generation rate temporarily
+        // Temporarily reduce gold generation rate
         GameManager.Instance.playerData.SetEventGoldMultiplier(0.5f);
 
-
-        yield return new WaitForSeconds(halfGoldTimer);
+        yield return new WaitForSeconds(halfGoldTimer); // Wait for the event's duration
 
         Debug.Log("HalfGold finished");
-        GameManager.Instance.playerData.SetEventGoldMultiplier(1f);
-        uiEventManager.HalfGoldUI();
-        checkEventStart();
+        GameManager.Instance.playerData.SetEventGoldMultiplier(1f); // Restore gold generation rate
+        uiEventManager.HalfGoldUI();                               // Update UI after event ends
+        checkEventStart();                                         // Restart event checks
         StopCoroutine(ActivateHalfGold());
     }
 
     /// <summary>
-    /// Activates the double gold event, doubling gold generation and updating UI.
+    /// Coroutine that activates the double gold event, temporarily doubling gold generation.
     /// </summary>
     private IEnumerator ActivateDoubleGold()
     {
-        sfxManager.DoublePlay();
-        uiEventManager.DoubleGoldUI();
-        GameManager.Instance.playerData.EventGoldPerSecond(2f);
+        sfxManager.DoublePlay();              // Play sound effect for double gold event
+        uiEventManager.DoubleGoldUI();        // Update UI for double gold event
+        GameManager.Instance.playerData.EventGoldPerSecond(2f); // Double the gold production rate
         Debug.Log("DoubleGold started");
 
-        // Double gold generation rate temporarily
+        // Temporarily double gold generation rate
         GameManager.Instance.playerData.SetEventGoldMultiplier(2f);
 
-        yield return new WaitForSeconds(doubleGoldTimer);
+        yield return new WaitForSeconds(doubleGoldTimer); // Wait for the event's duration
 
         Debug.Log("DoubleGold finished");
-        GameManager.Instance.playerData.SetEventGoldMultiplier(1f);
-        uiEventManager.DoubleGoldUI();
-        checkEventStart();
+        GameManager.Instance.playerData.SetEventGoldMultiplier(1f); // Restore gold generation rate
+        uiEventManager.DoubleGoldUI();                              // Update UI after event ends
+        checkEventStart();                                          // Restart event checks
         StopCoroutine(ActivateDoubleGold());
     }
+
+    /// <summary>
+    /// Passes a 2D vector (e.g., screen touch or click position) to the UIEventManager for processing.
+    /// </summary>
     public void PassVector2(Vector2 vector2)
     {
-        uiEventManager.GetScreenPosition(vector2);
+        uiEventManager.GetScreenPosition(vector2); // Process the input position in UIEventManager
     }
 }

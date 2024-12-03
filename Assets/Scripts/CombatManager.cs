@@ -1,23 +1,28 @@
+// The CombatManager script handles all aspects of combat logic, 
+// including managing stats, initiating combat, updating the UI, 
+// and applying win/loss consequences.
+
 using System.Collections;
 using UnityEngine;
 
 public class CombatManager : MonoBehaviour
 {
-    EventManager eventManager;
-    UIEventManager uiEventManager;
-    SFXManager sfxManager;
+    // References to other managers in the game
+    EventManager eventManager; // Manages in-game events
+    UIEventManager uiEventManager; // Handles combat-related UI updates
+    SFXManager sfxManager; // Plays sound effects for combat outcomes
 
     [Header("---COMBAT STATS---")]
-    [SerializeField] float enemyHealth; // Enemy's health value
-    [SerializeField] float enemyAttack; // Enemy's attack power
-    [SerializeField] float playerHealth; // Player's health value
-    [SerializeField] float playerAttack; // Player's attack power
+    [SerializeField] float enemyHealth; // Enemy's current health
+    [SerializeField] float enemyAttack; // Enemy's attack power per turn
+    [SerializeField] float playerHealth; // Player's current health
+    [SerializeField] float playerAttack; // Player's attack power per turn
 
     [Header("---ENEMY MULTIPLIER---")]
-    [SerializeField] float enemyHealthMultiplier; // Multiplier for the enemy's health after each combat
-    [SerializeField] float enemyAttackPowerMultiplier; // Multiplier for the enemy's attack power after each combat
+    [SerializeField] float enemyHealthMultiplier; // Multiplier for enemy health after a win
+    [SerializeField] float enemyAttackPowerMultiplier; // Multiplier for enemy attack power after a win
 
-    // Method to get the necessary scripts for event management, UI updates, and sound effects
+    // Retrieves references to required scripts at runtime
     public void getScripts()
     {
         eventManager = GetComponent<EventManager>();
@@ -25,73 +30,74 @@ public class CombatManager : MonoBehaviour
         sfxManager = GetComponent<SFXManager>();
     }
 
-    // This method sets the values for the player and enemy's stats
+    // Initializes the stats for the player and enemy from the GameManager
     private void GetStatsValues()
     {
-        playerHealth = GameManager.Instance.playerData.health; // Retrieves player's health from PlayerData
-        playerAttack = GameManager.Instance.playerData.attackPower; // Retrieves player's attack power from PlayerData
-        enemyHealth = GameManager.Instance.playerData.enemyHealth; // Retrieves enemy's health from PlayerData
-        enemyAttack = GameManager.Instance.playerData.enemyAttackPower; // Retrieves enemy's attack power from PlayerData
+        playerHealth = GameManager.Instance.playerData.health; // Player's health from persistent data
+        playerAttack = GameManager.Instance.playerData.attackPower; // Player's attack power
+        enemyHealth = GameManager.Instance.playerData.enemyHealth; // Enemy's health from persistent data
+        enemyAttack = GameManager.Instance.playerData.enemyAttackPower; // Enemy's attack power
     }
 
-    // Starts the combat by enabling the UI and setting up initial stats
+    // Starts a combat session, enabling UI and running the combat coroutine
     public void StartCombat()
     {
-        uiEventManager.CombatUI(); // Toggles the combat UI
-        GetStatsValues(); // Sets up stats for the player and enemy
-        StartCoroutine(CombatCoroutine()); // Starts the combat coroutine
+        uiEventManager.CombatUI(); // Show combat UI
+        GetStatsValues(); // Initialize player and enemy stats
+        StartCoroutine(CombatCoroutine()); // Run combat loop
     }
 
-    // Coroutine that handles the combat sequence
+    // Coroutine that simulates turn-based combat
     private IEnumerator CombatCoroutine()
     {
-        float maxPlayerHealth = playerHealth; // Stores the initial player health for the health bar
-        float maxEnemyHealth = enemyHealth; // Stores the initial enemy health for the health bar
+        // Store the initial health values for use in UI updates
+        float maxPlayerHealth = playerHealth;
+        float maxEnemyHealth = enemyHealth;
 
-        // The combat loop will continue as long as both the player and enemy have health
+        // Combat continues until either player or enemy health drops to zero
         while (playerHealth > 0 && enemyHealth > 0)
         {
-            playerAttack = GameManager.Instance.playerData.attackPower; // Gets updated player attack power
+            // Fetch the player's attack power in case it has been updated dynamically
+            playerAttack = GameManager.Instance.playerData.attackPower;
 
-            enemyHealth -= playerAttack; // Decreases enemy health by the player's attack power
-            playerHealth -= enemyAttack; // Decreases player health by the enemy's attack power
+            // Apply damage from each side
+            enemyHealth -= playerAttack; // Enemy takes damage
+            playerHealth -= enemyAttack; // Player takes damage
 
-            // Updates health bars on the UI
+            // Update the UI with the latest health values
             uiEventManager.UpdateHealthBars(playerHealth, maxPlayerHealth, enemyHealth, maxEnemyHealth);
 
-            yield return new WaitForSeconds(1f); // Wait for 1 second between attacks
+            yield return new WaitForSeconds(1f); // Wait for a second between attacks
 
             Debug.Log($"Player health: {playerHealth}");
             Debug.Log($"Enemy health: {enemyHealth}");
         }
 
-        // If the enemy's health reaches zero, the player wins
-        if (enemyHealth <= 0)
+        // Handle the outcomes based on remaining health
+        if (enemyHealth <= 0) // Player wins
         {
-            NextEnemy(); // Increases the difficulty for the next enemy
-
+            NextEnemy(); // Prepare the next enemy with scaled stats
             Debug.Log("Player won");
-            eventManager.checkEventStart(); // Check if any event should start after the combat
-            uiEventManager.CombatUI(); // Toggles off combat UI
-            uiEventManager.onPlayerWin(); // Triggers UI for player win
-            sfxManager.PlayerWinPlay(); // Plays victory sound
-            GameManager.Instance.playerData.baseGoldPerSecond = GameManager.Instance.playerData.baseGoldPerSecond * 2;
-            StopCoroutine(CombatCoroutine()); // Stops the combat coroutine
+            eventManager.checkEventStart(); // Check for post-combat events
+            uiEventManager.CombatUI(); // Disable combat UI
+            uiEventManager.onPlayerWin(); // Display win UI
+            sfxManager.PlayerWinPlay(); // Play victory sound
+            GameManager.Instance.playerData.baseGoldPerSecond *= 2; // Double gold income
+            StopCoroutine(CombatCoroutine()); // End combat loop
         }
-        // If the player's health reaches zero, the enemy wins
-        else if (playerHealth <= 0)
+        else if (playerHealth <= 0) // Enemy wins
         {
             Debug.Log("Player lose");
-            eventManager.checkEventStart(); // Check if any event should start after the combat
-            uiEventManager.CombatUI(); // Toggles off combat UI
-            uiEventManager.onPlayerLose(); // Triggers UI for player loss
-            sfxManager.PlayerLosePlay(); // Plays loss sound
-            GameManager.Instance.playerData.gold = GameManager.Instance.playerData.gold * 0.5f;
-            StopCoroutine(CombatCoroutine()); // Stops the combat coroutine
+            eventManager.checkEventStart(); // Check for post-combat events
+            uiEventManager.CombatUI(); // Disable combat UI
+            uiEventManager.onPlayerLose(); // Display loss UI
+            sfxManager.PlayerLosePlay(); // Play defeat sound
+            GameManager.Instance.playerData.gold *= 0.5f; // Halve player's gold
+            StopCoroutine(CombatCoroutine()); // End combat loop
         }
     }
 
-    // Prepares the player for the next enemy by adjusting the enemy's stats
+    // Scales up the enemy's stats for the next encounter
     private void NextEnemy()
     {
         GameManager.Instance.playerData.AddEnemyStats(enemyHealthMultiplier, enemyAttackPowerMultiplier);
