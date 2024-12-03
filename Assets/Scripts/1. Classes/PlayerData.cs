@@ -7,7 +7,10 @@ public class PlayerData
     public float gold;
 
     // Gold generation rate per second
-    public float goldPerSecond = 1;
+    public float baseGoldPerSecond = 1;
+
+    public float goldPerSecond => baseGoldPerSecond * eventGoldMultiplier; // Effective gold per second
+    private float eventGoldMultiplier = 1f; // Multiplier applied during events
 
     // Multiplier applied to the cost of buyable items
     public float costMultiplier = 1;
@@ -53,13 +56,13 @@ public class PlayerData
     // Increases the cost multiplier for buyable items
     public void AddCostMultiplier()
     {
-        costMultiplier += 0.1f * costMultiplier;
+        costMultiplier += 1f * costMultiplier;
     }
 
     // Increases the player's gold generation rate
     public void AddGoldPerSecond(float amount)
     {
-        goldPerSecond += amount;
+        baseGoldPerSecond += amount;
     }
 
     // Increases the player's health by a specified amount
@@ -90,7 +93,11 @@ public class PlayerData
     // Modifies the gold generation rate by a specified factor
     public void EventGoldPerSecond(float amount)
     {
-        goldPerSecond *= amount;
+        baseGoldPerSecond *= amount;
+    }
+    public void SetEventGoldMultiplier(float multiplier)
+    {
+        eventGoldMultiplier = multiplier; // Temporarily modify the gold multiplier
     }
 
     // Allows the player to buy a ship if they have enough gold, and triggers relevant actions
@@ -108,13 +115,13 @@ public class PlayerData
             AddGold(-(shipCost * costMultiplier));
 
             // Increase the player's gold generation rate
-            AddGoldPerSecond(ship.baseGoldProduction);
+            AddGoldPerSecond(ship.baseGoldProduction * baseGoldPerSecond);
 
             // Increase the player's attack power
-            addAttackPower(ship.attackPower);
+            addAttackPower(ship.attackPower * attackPower);
 
             // Increase the player's health
-            AddHealth(ship.health);
+            AddHealth(ship.health * health);
 
             // Update the cost multiplier for future purchases
             AddCostMultiplier();

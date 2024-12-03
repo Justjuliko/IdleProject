@@ -75,16 +75,18 @@ public class CombatManager : MonoBehaviour
             uiEventManager.CombatUI(); // Toggles off combat UI
             uiEventManager.onPlayerWin(); // Triggers UI for player win
             sfxManager.PlayerWinPlay(); // Plays victory sound
+            GameManager.Instance.playerData.baseGoldPerSecond = GameManager.Instance.playerData.baseGoldPerSecond * 2;
             StopCoroutine(CombatCoroutine()); // Stops the combat coroutine
         }
         // If the player's health reaches zero, the enemy wins
         else if (playerHealth <= 0)
         {
-            Debug.Log("Enemy won");
+            Debug.Log("Player lose");
             eventManager.checkEventStart(); // Check if any event should start after the combat
             uiEventManager.CombatUI(); // Toggles off combat UI
             uiEventManager.onPlayerLose(); // Triggers UI for player loss
             sfxManager.PlayerLosePlay(); // Plays loss sound
+            GameManager.Instance.playerData.gold = GameManager.Instance.playerData.gold * 0.5f;
             StopCoroutine(CombatCoroutine()); // Stops the combat coroutine
         }
     }

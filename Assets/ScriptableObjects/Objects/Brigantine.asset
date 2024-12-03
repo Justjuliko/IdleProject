@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Brigantine
   m_EditorClassIdentifier: 
   shipName: Valerya
-  shipPrefab: {fileID: 5171706226241994471, guid: 1919ccb583289ac49ae997b02b7c25d8, type: 3}
-  baseGoldProduction: 1
-  baseCost: 4
-  attackPower: 5
-  health: 10
+  shipPrefab: {fileID: 5171706226241994471, guid: 86b531ebdce409d41a1badace311c386, type: 3}
+  baseGoldProduction: 0
+  baseCost: 2
+  attackPower: 0.1
+  health: 0
   tier: 2

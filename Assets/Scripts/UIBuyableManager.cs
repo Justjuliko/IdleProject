@@ -33,11 +33,31 @@ public class UIBuyableManager : MonoBehaviour
 
         // Sets the displayed text for each ship value
         nameText.text = ship.shipName; // Displays the ship's name
-        goldProductionText.text = ship.baseGoldProduction.ToString("F0"); // Displays the gold production rate
-        goldCostText.text = (ship.baseCost * costMultiplier).ToString("F0"); // Displays the cost of the ship, adjusted by the multiplier
-        attackValueText.text = "+ " + ship.attackPower.ToString("F0"); // Displays the ship's attack power
-        healthValueText.text = "+ " + ship.health.ToString("F0"); // Displays the ship's health
+        goldProductionText.text = "+ " + FormatNumber(ship.baseGoldProduction * GameManager.Instance.playerData.baseGoldPerSecond); // Displays the gold production rate
+        goldCostText.text = "- " + FormatNumber(ship.baseCost * costMultiplier); // Displays the cost of the ship, adjusted by the multiplier
+        attackValueText.text = "+ " + FormatNumber(ship.attackPower * GameManager.Instance.playerData.attackPower); // Displays the ship's attack power
+        healthValueText.text = "+ " + FormatNumber(ship.health * GameManager.Instance.playerData.health); // Displays the ship's health
     }
+
+    /// <summary>
+    /// Formats a number into a compact string representation (e.g., 1k, 1M, 1B).
+    /// </summary>
+    /// <param name="value">The number to format.</param>
+    /// <returns>A formatted string representation of the number.</returns>
+    private string FormatNumber(float value)
+    {
+        if (value >= 1_000_000_000_000) // Trillions (T)
+            return (value / 1_000_000_000_000f).ToString("F1") + "T";
+        else if (value >= 1_000_000_000) // Billions (B)
+            return (value / 1_000_000_000f).ToString("F1") + "B";
+        else if (value >= 1_000_000) // Millions (M)
+            return (value / 1_000_000f).ToString("F1") + "M";
+        else if (value >= 1_000) // Thousands (k)
+            return (value / 1_000f).ToString("F1") + "k";
+        else
+            return value.ToString("F1"); // Default format for smaller numbers
+    }
+
 
     // Determines if the ship's button should be interactable (if the player has enough gold to buy the ship)
     public void isButtonInteractable()

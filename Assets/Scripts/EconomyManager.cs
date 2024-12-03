@@ -98,4 +98,12 @@ public class EconomyManager : MonoBehaviour
         uiBuyableManagerBrigantine.getButton();
         uiBuyableManagerGalleon.getButton();
     }
+    //Clicker method
+    public void clickerMethod()
+    {
+        float shipCount = 0.5f * GameManager.Instance.playerData.goldPerSecond;
+        GameManager.Instance.playerData.AddGold(shipCount);
+        uiEventManager.ProcessClick();
+        sfxManager.TapPlay();        
+    }
 }

@@ -58,12 +58,12 @@ public class EventManager : MonoBehaviour
             StartCoroutine(ActivateDoubleGold()); // Double gold event.
             StopCoroutine(CheckForEvents());
         }
-        else if (eventChance >= 26 && eventChance <= 50)
+        else if (eventChance >= 26 && eventChance <= 30)
         {
             StartCoroutine(ActivateHalfGold()); // Half gold event.
             StopCoroutine(CheckForEvents());
         }
-        else if (eventChance >= 51 && eventChance <= 65)
+        else if (eventChance >= 31 && eventChance <= 35)
         {
             combatManager.StartCombat(); // Combat event.
             sfxManager.CombatPlay();
@@ -84,13 +84,16 @@ public class EventManager : MonoBehaviour
     {
         sfxManager.HalfPlay();
         uiEventManager.HalfGoldUI();
-        GameManager.Instance.playerData.EventGoldPerSecond(0.5f);
         Debug.Log("HalfGold started");
+
+        // Reduce gold generation rate temporarily
+        GameManager.Instance.playerData.SetEventGoldMultiplier(0.5f);
+
 
         yield return new WaitForSeconds(halfGoldTimer);
 
         Debug.Log("HalfGold finished");
-        GameManager.Instance.playerData.EventGoldPerSecond(2f);
+        GameManager.Instance.playerData.SetEventGoldMultiplier(1f);
         uiEventManager.HalfGoldUI();
         checkEventStart();
         StopCoroutine(ActivateHalfGold());
@@ -106,12 +109,19 @@ public class EventManager : MonoBehaviour
         GameManager.Instance.playerData.EventGoldPerSecond(2f);
         Debug.Log("DoubleGold started");
 
+        // Double gold generation rate temporarily
+        GameManager.Instance.playerData.SetEventGoldMultiplier(2f);
+
         yield return new WaitForSeconds(doubleGoldTimer);
 
         Debug.Log("DoubleGold finished");
-        GameManager.Instance.playerData.EventGoldPerSecond(0.5f);
+        GameManager.Instance.playerData.SetEventGoldMultiplier(1f);
         uiEventManager.DoubleGoldUI();
         checkEventStart();
         StopCoroutine(ActivateDoubleGold());
+    }
+    public void PassVector2(Vector2 vector2)
+    {
+        uiEventManager.GetScreenPosition(vector2);
     }
 }

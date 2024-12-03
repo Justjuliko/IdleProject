@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Galleon
   m_EditorClassIdentifier: 
   shipName: Magadalena
-  shipPrefab: {fileID: 5171706226241994471, guid: 1919ccb583289ac49ae997b02b7c25d8, type: 3}
-  baseGoldProduction: 1
-  baseCost: 4
-  attackPower: 1
-  health: 50
+  shipPrefab: {fileID: 5171706226241994471, guid: 43606e091340cf54b8ea003c4c5c3984, type: 3}
+  baseGoldProduction: 0
+  baseCost: 2
+  attackPower: 0
+  health: 0.1
   tier: 3
