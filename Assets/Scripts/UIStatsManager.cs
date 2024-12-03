@@ -33,16 +33,29 @@ public class UIStatsManager : MonoBehaviour
     /// <returns>A formatted string representation of the number.</returns>
     private string FormatNumber(float value)
     {
-        if (value >= 1_000_000_000_000) // Trillions (T)
-            return (value / 1_000_000_000_000f).ToString("F1") + "T";
-        else if (value >= 1_000_000_000) // Billions (B)
-            return (value / 1_000_000_000f).ToString("F1") + "B";
-        else if (value >= 1_000_000) // Millions (M)
-            return (value / 1_000_000f).ToString("F1") + "M";
-        else if (value >= 1_000) // Thousands (k)
-            return (value / 1_000f).ToString("F1") + "k";
+        if (value >= 1e30f) // Decillones
+            return (value / 1e30f).ToString("F1") + "D"; // Decillions (10^30)
+        else if (value >= 1e27f) // Nonillones
+            return (value / 1e27f).ToString("F1") + "N"; // Nonillions (10^27)
+        else if (value >= 1e24f) // Octillones
+            return (value / 1e24f).ToString("F1") + "O"; // Octillions (10^24)
+        else if (value >= 1e21f) // Septillones
+            return (value / 1e21f).ToString("F1") + "S"; // Septillions (10^21)
+        else if (value >= 1e18f) // Quintillones
+            return (value / 1e18f).ToString("F1") + "Q"; // Quintillions (10^18)
+        else if (value >= 1e15f) // Cuatrillones
+            return (value / 1e15f).ToString("F1") + "Qa"; // Quadrillions (10^15)
+        else if (value >= 1e12f) // Trillones
+            return (value / 1e12f).ToString("F1") + "T"; // Trillions (10^12)
+        else if (value >= 1e9f) // Mil millones
+            return (value / 1e9f).ToString("F1") + "B"; // Billions (10^9)
+        else if (value >= 1e6f) // Millones
+            return (value / 1e6f).ToString("F1") + "M"; // Millions (10^6)
+        else if (value >= 1e3f) // Miles
+            return (value / 1e3f).ToString("F1") + "k"; // Thousands (10^3)
         else
-            return value.ToString("F1"); // Default format for smaller numbers
+            return value.ToString("F1"); // Menos de 1,000
     }
+
 
 }

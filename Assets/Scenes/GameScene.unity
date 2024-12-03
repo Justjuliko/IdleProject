@@ -3760,8 +3760,8 @@ MonoBehaviour:
   enemyAttack: 0
   playerHealth: 0
   playerAttack: 0
-  enemyHealthMultiplier: 1
-  enemyAttackPowerMultiplier: 1
+  enemyHealthMultiplier: 0.25
+  enemyAttackPowerMultiplier: 0.25
 --- !u!114 &472406903
 MonoBehaviour:
   m_ObjectHideFlags: 0

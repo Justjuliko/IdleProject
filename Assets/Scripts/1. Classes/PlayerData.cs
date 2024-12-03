@@ -56,7 +56,7 @@ public class PlayerData
     // Increases the cost multiplier for buyable items
     public void AddCostMultiplier()
     {
-        costMultiplier += 1f * costMultiplier;
+        costMultiplier += 0.5f * costMultiplier;
     }
 
     // Increases the player's gold generation rate

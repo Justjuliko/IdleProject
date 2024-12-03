@@ -222,7 +222,7 @@ public class UIEventManager : MonoBehaviour
     private void ShowGoldText(float shipCount)
     {
         // Format the number using the large number formatting
-        string formattedGold = FormatLargeNumbers(shipCount);
+        string formattedGold = FormatNumber(shipCount);
 
         // Set the text content
         reusableGoldText.text = "+ " + formattedGold;
@@ -244,19 +244,32 @@ public class UIEventManager : MonoBehaviour
     }
 
     // Utility function to format numbers in "k", "M", etc.
-    private string FormatLargeNumbers(float value)
+    private string FormatNumber(float value)
     {
-        if (value >= 1e12f)
-            return (value / 1e12f).ToString("F1") + "T"; // Trillions
-        else if (value >= 1e9f)
-            return (value / 1e9f).ToString("F1") + "B"; // Billions
-        else if (value >= 1e6f)
-            return (value / 1e6f).ToString("F1") + "M"; // Millions
-        else if (value >= 1e3f)
-            return (value / 1e3f).ToString("F1") + "k"; // Thousands
+        if (value >= 1e30f) // Decillones
+            return (value / 1e30f).ToString("F1") + "D"; // Decillions (10^30)
+        else if (value >= 1e27f) // Nonillones
+            return (value / 1e27f).ToString("F1") + "N"; // Nonillions (10^27)
+        else if (value >= 1e24f) // Octillones
+            return (value / 1e24f).ToString("F1") + "O"; // Octillions (10^24)
+        else if (value >= 1e21f) // Septillones
+            return (value / 1e21f).ToString("F1") + "S"; // Septillions (10^21)
+        else if (value >= 1e18f) // Quintillones
+            return (value / 1e18f).ToString("F1") + "Q"; // Quintillions (10^18)
+        else if (value >= 1e15f) // Cuatrillones
+            return (value / 1e15f).ToString("F1") + "Qa"; // Quadrillions (10^15)
+        else if (value >= 1e12f) // Trillones
+            return (value / 1e12f).ToString("F1") + "T"; // Trillions (10^12)
+        else if (value >= 1e9f) // Mil millones
+            return (value / 1e9f).ToString("F1") + "B"; // Billions (10^9)
+        else if (value >= 1e6f) // Millones
+            return (value / 1e6f).ToString("F1") + "M"; // Millions (10^6)
+        else if (value >= 1e3f) // Miles
+            return (value / 1e3f).ToString("F1") + "k"; // Thousands (10^3)
         else
-            return value.ToString("F1"); // Less than 1,000
+            return value.ToString("F1"); // Menos de 1,000
     }
+
 
     private void HideGoldText()
     {
